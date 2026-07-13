@@ -5,6 +5,7 @@
 /goyoutube
 *.test
 coverage.out
+coverage.html
 
 # Generated media
 /client/out.mp4
