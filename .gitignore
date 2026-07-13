@@ -1,0 +1,16 @@
+# macOS metadata
+.DS_Store
+
+# Go build and test artifacts
+/goyoutube
+*.test
+coverage.out
+coverage.html
+
+# Generated media
+/client/out.mp4
+/client/out.raw
+/output/
+
+# Local development certificates and private keys
+*.pem
