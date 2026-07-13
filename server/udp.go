@@ -47,7 +47,7 @@ func readMp4file(file []byte) {
 	})
 }
 
-func Udp() {
+func RunUDP() {
 	// listen to incoming udp packets
 	conn, err := net.ListenPacket("udp4", "localhost:1053")
 	fmt.Println("Echo UPD Server is online")

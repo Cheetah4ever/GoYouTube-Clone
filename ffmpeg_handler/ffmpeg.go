@@ -14,7 +14,7 @@ import (
 	//"github.com/quic-go/quic-go"
 )
 
-func Tcp() {
+func serveBufferedRawVideoTCP() {
 	log.Print("Opening TCP Sockets")
 	listener, err := net.Listen("tcp", "localhost:4200")
 	if err != nil {
@@ -68,7 +68,7 @@ func Tcp() {
 	}
 }
 
-func TestNotUsed() {
+func decodeRawVideo() {
 	log.Print("ffmpeg")
 	pr, pw := io.Pipe()
 	ffmpeg.Input("/Users/vgupta/projects/Go Practice/goyoutube/z_client/206294_tiny.mp4").
@@ -84,19 +84,7 @@ func TestNotUsed() {
 	}
 }
 
-/*
-func main() {
-	//log.Print("Start")
-	//tcp()
-	//log.Print("End")
-	//TestNotused()
-	//chatgpt_tcp()
-	//test_tcp()
-	//test2_tcp()
-	Test5()
-}*/
-
-func Chatgpt_tcp() {
+func streamRawVideoTCP() {
 
 	log.Print("Opening TCP Sockets")
 	listener, err := net.Listen("tcp", "localhost:4200")
@@ -134,7 +122,7 @@ func Chatgpt_tcp() {
 	}
 }
 
-func Test_tcp() {
+func streamH264MP4TCP() {
 	listener, err := net.Listen("tcp", "localhost:4200")
 	if err != nil {
 		log.Fatal(err)
@@ -192,7 +180,7 @@ func Test_tcp() {
 
 }
 
-func Test2_tcp() {
+func streamInputVideoTCP() {
 	listener, err := net.Listen("tcp", "localhost:4200")
 	if err != nil {
 		log.Fatal(err)
@@ -245,7 +233,7 @@ func Test2_tcp() {
 
 }
 
-func Test3() {
+func inspectMediaStreams() {
 
 	split := ffmpeg.Input("/Users/vgupta/projects/Go Practice/goyoutube/z_client/206294_tiny.mp4").
 		Split()
@@ -262,7 +250,7 @@ func Test3() {
 	fmt.Println(aud)
 }
 
-func Test4() {
+func transcodeH265MP4ToBuffer() {
 	buf := bytes.NewBuffer(nil)
 	err := ffmpeg.Input("/Users/vgupta/projects/Go Practice/goyoutube/z_client/206294_tiny.mp4").
 		Output("pipe:", ffmpeg.KwArgs{"c:v": "libx265", "f": "mp4"}).
@@ -275,7 +263,7 @@ func Test4() {
 
 }
 
-func Test5(pw *io.PipeWriter) {
+func TranscodeSampleToMPEGTS(pw *io.PipeWriter) {
 
 	defer pw.Close()
 	err := ffmpeg.Input("/Users/vgupta/projects/Go Practice/goyoutube/client/206294_tiny.mp4").
@@ -291,7 +279,7 @@ func Test5(pw *io.PipeWriter) {
 
 }
 
-func Test6() {
+func transcodeH265MatroskaToStdout() {
 	err := ffmpeg.Input("/Users/vgupta/projects/Go Practice/goyoutube/z_client/206294_tiny.mp4").
 		Output("pipe:", ffmpeg.KwArgs{
 			"c:v": "libx265",
@@ -304,7 +292,7 @@ func Test6() {
 
 }
 
-func Test7() {
+func transcodeFragmentedMP4ToStdout() {
 	err := ffmpeg.Input("/Users/vgupta/projects/Go Practice/goyoutube/z_client/206294_tiny.mp4").
 		Output("pipe:", ffmpeg.KwArgs{
 			"c:v":      "libx265",
@@ -317,7 +305,7 @@ func Test7() {
 	fmt.Println(err)
 }
 
-func Test8() {
+func transcodeH265MPEGTSStdout() {
 	err := ffmpeg.Input("./sample_data/in1.mp4").
 		Output("pipe:", ffmpeg.KwArgs{
 			"c:v":    "libx265",
@@ -331,7 +319,7 @@ func Test8() {
 	fmt.Println(err)
 }
 
-func Test9() {
+func serveVideoHTTPExperiment() {
 	http.HandleFunc("/video", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "video.mp4")
 	})
@@ -340,7 +328,7 @@ func Test9() {
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-func Test10() {
+func registerHTTP3VideoExperiment() {
 	http.HandleFunc("/video", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "video.mp4")
 	})
@@ -354,7 +342,7 @@ func Test10() {
 	*/
 }
 
-func Test11() {
+func generateHLS() {
 	//python3 -m http.server 8080 -d output/
 	err := ffmpeg.Input("./sample_data/in1.mp4").
 		Output("output/playlist.m3u8", ffmpeg.KwArgs{
@@ -372,7 +360,7 @@ func Test11() {
 	}
 }
 
-func Test12(tsData []byte, filename string) {
+func RemuxMPEGTSFile(tsData []byte, filename string) {
 	cmd := exec.Command("ffmpeg",
 		"-f", "mpegts", "-i", "pipe:0",
 		"-c", "copy",
@@ -388,7 +376,7 @@ func Test12(tsData []byte, filename string) {
 
 }
 
-func Test13() {
+func transcodeMPEGTSExampleToMP3() {
 
 	// Example MPEG-TS data — in practice, this comes from a network or file.
 	// For demo, replace with real TS bytes.
@@ -433,7 +421,7 @@ func Test13() {
 	log.Println("Done: output.mp3 created")
 }
 
-func Test14(tsData []byte) {
+func transcodeMPEGTSBytesToMP4(tsData []byte) {
 	cmd := exec.Command("ffmpeg",
 		"-f", "mpegts", "-i", "pipe:0",
 		"-c:v", "libx264", "-preset", "veryfast", "-pix_fmt", "yuv420p",

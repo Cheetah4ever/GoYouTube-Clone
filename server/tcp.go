@@ -13,7 +13,7 @@ import (
 	"os"
 )
 
-func Tcp() {
+func RunTCP() {
 
 	listener, err := net.Listen("tcp", "localhost:4200")
 	if err != nil {
@@ -37,13 +37,13 @@ func Tcp() {
 			if bytes.Equal([]byte("Video"), buf[:n]) {
 				pr, pw := io.Pipe()
 
-				go ffmpeg_handler.Test5(pw)
+				go ffmpeg_handler.TranscodeSampleToMPEGTS(pw)
 				vidbuf, err := io.ReadAll(pr)
 				if err != nil {
 					fmt.Println(err)
 				}
 				filename := "/Users/vgupta/projects/Go Practice/goyoutube/client/out.mp4"
-				ffmpeg_handler.Test12(vidbuf, filename)
+				ffmpeg_handler.RemuxMPEGTSFile(vidbuf, filename)
 				_, e := conn.Write(vidbuf)
 				if e != nil {
 					fmt.Println(e)
