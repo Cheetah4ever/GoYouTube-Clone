@@ -9,5 +9,3 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/u2takey/go-utils v0.3.1 // indirect
 )
-
-replace goyoutube/ffmpeg_handler => ./ffmpeg_handler

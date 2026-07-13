@@ -1,18 +1,19 @@
 package server
 
 import (
-	//"flag"
 	"bytes"
 	"fmt"
-	//"time"
+	"io"
 	"log"
 	"net"
-
-	ffmpeg_handler "goyoutube/ffmpeg_handler"
-	"io"
 	"os"
+
+	"goyoutube/ffmpeg_handler"
 )
 
+const legacyTCPOutputPath = "client/out.mp4"
+
+// RunTCP starts the original TCP video experiment.
 func RunTCP() {
 
 	listener, err := net.Listen("tcp", "localhost:4200")
@@ -37,13 +38,12 @@ func RunTCP() {
 			if bytes.Equal([]byte("Video"), buf[:n]) {
 				pr, pw := io.Pipe()
 
-				go ffmpeg_handler.TranscodeSampleToMPEGTS(pw)
+				go ffmpeghandler.TranscodeSampleToMPEGTS(pw)
 				vidbuf, err := io.ReadAll(pr)
 				if err != nil {
 					fmt.Println(err)
 				}
-				filename := "/Users/vgupta/projects/Go Practice/goyoutube/client/out.mp4"
-				ffmpeg_handler.RemuxMPEGTSFile(vidbuf, filename)
+				ffmpeghandler.RemuxMPEGTSFile(vidbuf, legacyTCPOutputPath)
 				_, e := conn.Write(vidbuf)
 				if e != nil {
 					fmt.Println(e)

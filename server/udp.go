@@ -10,6 +10,8 @@ import (
 	//"tag"
 )
 
+// This file preserves an incomplete UDP experiment for reference. The primary
+// application uses HTTP because video files require reliable, ordered delivery.
 func check(e error) {
 	if e != nil {
 		panic(e)
@@ -56,13 +58,13 @@ func RunUDP() {
 	}
 	defer conn.Close()
 
-	dat, err := os.ReadFile("goyoutube/z_client/206294_tiny.mp4")
+	dat, err := os.ReadFile("client/206294_tiny.mp4")
 	//os.Stdout.Write(dat)
 	//check(err)
 	// cache block size   : 128KBytes
 	// cache block history: 4
-	//dat := bufseekio.NewReadSeeker("goyoutube/z_client/206294_tiny.mp4", 128 * 1024, 4)
-	m, err := tag.ReadFrom("goyoutube/z_client/206294_tiny.mp4")
+	//dat := bufseekio.NewReadSeeker("client/206294_tiny.mp4", 128 * 1024, 4)
+	m, err := tag.ReadFrom("client/206294_tiny.mp4")
 	if err != nil {
 		log.Fatal(err)
 	}

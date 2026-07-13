@@ -1,4 +1,6 @@
-package ffmpeg_handler
+// Package ffmpeghandler contains the project's preserved FFmpeg experiments.
+// The primary HTTP server does not depend on these functions.
+package ffmpeghandler
 
 import (
 	"bytes"
@@ -13,6 +15,8 @@ import (
 	ffmpeg "github.com/u2takey/ffmpeg-go"
 	//"github.com/quic-go/quic-go"
 )
+
+const sampleVideoPath = "client/206294_tiny.mp4"
 
 func serveBufferedRawVideoTCP() {
 	log.Print("Opening TCP Sockets")
@@ -32,7 +36,7 @@ func serveBufferedRawVideoTCP() {
 
 	log.Print("About to read the video")
 
-	go ffmpeg.Input("goyoutube/z_client/206294_tiny.mp4").
+	go ffmpeg.Input(sampleVideoPath).
 		Output("pipe:", ffmpeg.KwArgs{"format": "rawvideo", "pix_fmt": "rgb24"}).
 		WithOutput(pw).
 		Run()
@@ -71,12 +75,11 @@ func serveBufferedRawVideoTCP() {
 func decodeRawVideo() {
 	log.Print("ffmpeg")
 	pr, pw := io.Pipe()
-	ffmpeg.Input("/Users/vgupta/projects/Go Practice/goyoutube/z_client/206294_tiny.mp4").
+	ffmpeg.Input(sampleVideoPath).
 		Output("pipe:", ffmpeg.KwArgs{"format": "rawvideo", "pix_fmt": "rgb24"}).
 		WithOutput(pw).
 		ErrorToStdOut().
 		Run()
-		//Users/vgupta/projects/Go Practice/goyoutube/z_client/206294_tiny.mp4
 	_, err := io.ReadAll(pr)
 	//log.Print(vbuf)
 	if err != nil {
@@ -102,7 +105,7 @@ func streamRawVideoTCP() {
 
 	go func() {
 		defer pw.Close()
-		_ = ffmpeg.Input("goyoutube/z_client/206294_tiny.mp4").
+		_ = ffmpeg.Input(sampleVideoPath).
 			Output("pipe:", ffmpeg.KwArgs{"format": "rawvideo", "pix_fmt": "rgb24"}).
 			WithOutput(pw).
 			Run()
@@ -143,7 +146,7 @@ func streamH264MP4TCP() {
 	go func() {
 		out := bytes.NewBuffer(nil)
 		defer pw.Close()
-		err := ffmpeg.Input("/Users/vgupta/projects/Go Practice/goyoutube/z_client/206294_tiny.mp4").
+		err := ffmpeg.Input(sampleVideoPath).
 			Output("pipe:1", ffmpeg.KwArgs{
 				"vcodec": "libx264",
 				"preset": "fast",
@@ -201,7 +204,7 @@ func streamInputVideoTCP() {
 	go func() {
 		out := bytes.NewBuffer(nil)
 		defer pw.Close()
-		err := ffmpeg.Input("/Users/vgupta/projects/Go Practice/goyoutube/z_client/206294_tiny.mp4").
+		err := ffmpeg.Input(sampleVideoPath).
 			Output("pipe:1").
 			WithOutput(pw).
 			WithErrorOutput(out).
@@ -235,24 +238,24 @@ func streamInputVideoTCP() {
 
 func inspectMediaStreams() {
 
-	split := ffmpeg.Input("/Users/vgupta/projects/Go Practice/goyoutube/z_client/206294_tiny.mp4").
+	split := ffmpeg.Input(sampleVideoPath).
 		Split()
 	fmt.Println(split)
 	split0, split1 := split.Get("0"), split.Get("1")
 	fmt.Println(split0)
 	fmt.Println(split1)
-	vid := ffmpeg.Input("/Users/vgupta/projects/Go Practice/goyoutube/z_client/206294_tiny.mp4").
+	vid := ffmpeg.Input(sampleVideoPath).
 		Video().Output("pipe:0", ffmpeg.KwArgs{"t": "20", `f`: `mp4`, `vcodec`: `rawvideo`})
 	fmt.Println(vid)
 	vid.Run()
-	aud := ffmpeg.Input("/Users/vgupta/projects/Go Practice/goyoutube/z_client/206294_tiny.mp4").
+	aud := ffmpeg.Input(sampleVideoPath).
 		Audio()
 	fmt.Println(aud)
 }
 
 func transcodeH265MP4ToBuffer() {
 	buf := bytes.NewBuffer(nil)
-	err := ffmpeg.Input("/Users/vgupta/projects/Go Practice/goyoutube/z_client/206294_tiny.mp4").
+	err := ffmpeg.Input(sampleVideoPath).
 		Output("pipe:", ffmpeg.KwArgs{"c:v": "libx265", "f": "mp4"}).
 		WithOutput(buf).
 		OverWriteOutput().
@@ -266,7 +269,7 @@ func transcodeH265MP4ToBuffer() {
 func TranscodeSampleToMPEGTS(pw *io.PipeWriter) {
 
 	defer pw.Close()
-	err := ffmpeg.Input("/Users/vgupta/projects/Go Practice/goyoutube/client/206294_tiny.mp4").
+	err := ffmpeg.Input(sampleVideoPath).
 		Output("pipe:1", ffmpeg.KwArgs{
 			"c:v": "libx265",
 			"f":   "mpegts",
@@ -280,7 +283,7 @@ func TranscodeSampleToMPEGTS(pw *io.PipeWriter) {
 }
 
 func transcodeH265MatroskaToStdout() {
-	err := ffmpeg.Input("/Users/vgupta/projects/Go Practice/goyoutube/z_client/206294_tiny.mp4").
+	err := ffmpeg.Input(sampleVideoPath).
 		Output("pipe:", ffmpeg.KwArgs{
 			"c:v": "libx265",
 			"f":   "matroska", // MKV supports H.265 cleanly
@@ -293,7 +296,7 @@ func transcodeH265MatroskaToStdout() {
 }
 
 func transcodeFragmentedMP4ToStdout() {
-	err := ffmpeg.Input("/Users/vgupta/projects/Go Practice/goyoutube/z_client/206294_tiny.mp4").
+	err := ffmpeg.Input(sampleVideoPath).
 		Output("pipe:", ffmpeg.KwArgs{
 			"c:v":      "libx265",
 			"f":        "mp4",
@@ -306,7 +309,7 @@ func transcodeFragmentedMP4ToStdout() {
 }
 
 func transcodeH265MPEGTSStdout() {
-	err := ffmpeg.Input("./sample_data/in1.mp4").
+	err := ffmpeg.Input(sampleVideoPath).
 		Output("pipe:", ffmpeg.KwArgs{
 			"c:v":    "libx265",
 			"tag:v":  "hvc1", // ensure TS muxer recognizes HEVC
@@ -344,7 +347,7 @@ func registerHTTP3VideoExperiment() {
 
 func generateHLS() {
 	//python3 -m http.server 8080 -d output/
-	err := ffmpeg.Input("./sample_data/in1.mp4").
+	err := ffmpeg.Input(sampleVideoPath).
 		Output("output/playlist.m3u8", ffmpeg.KwArgs{
 			"c:v":                  "libx264",
 			"c:a":                  "aac",
